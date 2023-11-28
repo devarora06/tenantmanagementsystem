@@ -318,4 +318,6 @@ button:disabled {
   color: #000; /* Set the text color for the modal */
 }
 
-
+.nav-item:hover{
+  cursor: pointer;
+}

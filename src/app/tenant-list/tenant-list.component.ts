@@ -252,6 +252,8 @@ export class TenantListComponent {
           title: 'Delete Successful!',
           text: 'Tenant deleted successfully.',
         });
+
+        
         window.location.reload();
       });
       window.location.reload();
@@ -261,6 +263,11 @@ export class TenantListComponent {
     this.auth.signOut().then(() => {
       localStorage.removeItem('token')
       this.router.navigate(['/log']);
+    });
+    Swal.fire({
+      icon: 'success',
+      title: 'Logout Successful!',
+      text: 'User Logout successful',
     });
   }
 }

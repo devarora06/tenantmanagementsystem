@@ -52,7 +52,12 @@ export class SignupComponent {
 
     if (existingUser.data) {
       // User already exists
-      alert('User with this email already exists');
+     
+      Swal.fire({
+        icon: 'error',
+        title: 'Email Error',
+        text: 'User with this email already exists',
+      });
       return;
     }
     if (this.signupForm.valid) {
