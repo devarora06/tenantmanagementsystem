@@ -53,7 +53,7 @@
   <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
     <div class="modal-content">
       <div class="modal-header">
-        <h1 class="modal-title fs-5" id="createUserModalLabel">Create User</h1>
+        <h1 class="modal-title fs-5" id="createUserModalLabel">Invite User</h1>
         <button
           type="button"
           class="btn-close"
@@ -66,7 +66,7 @@
           <input type="hidden" id="id" formControlName="id" />
 
           <div class="form-group">
-            <label for="firstName">First Name</label>
+            <label for="firstName">First Name<span class="required">*</span></label>
             <input
               type="text"
               id="firstName"
@@ -89,7 +89,7 @@
           </div>
 
           <div class="form-group">
-            <label for="lastName">Last Name</label>
+            <label for="lastName">Last Name<span class="required">*</span></label>
             <input
               type="text"
               id="lastName"
@@ -112,7 +112,7 @@
           </div>
 
           <div class="form-group">
-            <label for="email">Email</label>
+            <label for="email">Email<span class="required">*</span></label>
             <input
               type="email"
               id="email"
@@ -145,7 +145,7 @@
           </div>
 
           <div class="form-group">
-            <label for="department">Department</label>
+            <label for="department">Department<span class="required">*</span></label>
             <input
               type="text"
               id="department"
@@ -167,28 +167,69 @@
             </div>
           </div>
 
-          <div class="form-group">
-            <label for="password">Password</label>
-            <input
-              type="password"
-              id="password"
-              formControlName="password"
-              [ngClass]="{
-                'is-invalid':
-                  createUserForm.get('password')?.touched &&
-                  createUserForm.get('password')?.hasError('required')
-              }"
-            />
-            <div
-              *ngIf="
-                createUserForm.get('password')?.touched &&
-                createUserForm.get('password')?.hasError('required')
-              "
-              class="invalid-feedback"
-            >
-              Password is required
-            </div>
-          </div>
+          <div
+  class="form-group"
+  [ngClass]="{
+    error:
+      createUserForm.get('password')?.invalid &&
+      createUserForm.get('password')?.touched
+  }"
+>
+  <label for="password">Password<span class="required">*</span></label>
+  <input type="password" id="password" formControlName="password" />
+  <div
+    *ngIf="
+      createUserForm.get('password')?.hasError('pattern') &&
+      createUserForm.get('password')?.touched
+    "
+    class="error-message"
+  >
+    Password must contain at least one number and one special character.
+  </div>
+  <div
+    *ngIf="
+      createUserForm.get('password')?.invalid &&
+      createUserForm.get('password')?.touched &&
+      !createUserForm.get('password')?.hasError('pattern')
+    "
+    class="error-message"
+  >
+    Please enter password.
+  </div>
+</div>
+<label for="confirmPassword">Confirm Password<span class="required-field">*</span></label>
+              <input
+                id="confirmPassword"
+                type="password"
+                formControlName="confirmPassword"
+                [ngClass]="{
+                  'invalid-password':
+                  createUserForm.get('confirmPassword')?.invalid &&
+                  createUserForm.get('confirmPassword')?.touched
+                }"
+                required
+              />
+ 
+              <div
+                *ngIf="
+                createUserForm.get('confirmPassword')?.hasError('required') &&
+                createUserForm.get('confirmPassword')?.touched
+                "
+                class="error-message"
+              >
+                Confirm Password is required
+              </div>
+ 
+              <div
+                *ngIf="
+                createUserForm.hasError('passwordMismatch') &&
+                createUserForm.get('confirmPassword')?.touched
+                "
+                class="error-message"
+              >
+                Passwords do not match
+              </div>
+
 
           <div class="form-group" hidden>
             <label for="tenantName">Tenant Name</label>
@@ -207,7 +248,7 @@
           data-bs-toggle="modal"
           [disabled]="!createUserForm.valid"
         >
-          Create User
+          Invite User
         </button>
       </div>
     </div>
@@ -239,7 +280,7 @@
           <div class="modal-body">
             <form [formGroup]="editUserForm">
               <div class="form-group">
-                <label for="firstName">First Name</label>
+                <label for="firstName">First Name<span class="required">*</span></label>
                 <input
                   type="text"
                   id="firstName"
@@ -262,7 +303,7 @@
               </div>
 
               <div class="form-group">
-                <label for="lastName">Last Name</label>
+                <label for="lastName">Last Name<span class="required">*</span></label>
                 <input
                   type="text"
                   id="lastName"
@@ -285,7 +326,7 @@
               </div>
 
               <div class="form-group">
-                <label for="department">Department</label>
+                <label for="department">Department<span class="required">*</span></label>
                 <input
                   type="text"
                   id="department"
@@ -340,7 +381,7 @@
         data-bs-toggle="modal"
         data-bs-target="#createUserModal"
       >
-        Create User
+        Invite User
       </button>
     </div>
   </div>
