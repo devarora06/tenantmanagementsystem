@@ -7,6 +7,7 @@ import {
   FormGroup,
   Validators,
 } from '@angular/forms';
+import Swal from 'sweetalert2';
 import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
 import { createClient } from '@supabase/supabase-js';
@@ -111,7 +112,12 @@ export class TenantListComponent {
 
     if (existingUser.data) {
       // User already exists
-      alert('User with this email already exists');
+      
+      Swal.fire({
+        icon: 'error',
+        title: 'Signup Error',
+        text: 'User with this email already exists',
+      });
       return;
     }
     if (this.createUserForm.valid) {
@@ -175,7 +181,12 @@ export class TenantListComponent {
         
 
         // Successful signup
-        alert('Tenant creation successful');
+        Swal.fire({
+          icon: 'success',
+          title: 'Signup Successful!',
+          text: 'Tenant creation successful',
+        });
+        
         // Redirect to the login page or another appropriate route
       } catch (error) {
         console.error('Supabase error:', error);
@@ -206,26 +217,45 @@ export class TenantListComponent {
   updateUser() {
     const formData = this.editUserForm.value;
     this.tenantData.updateTenant(formData).subscribe(() => {
-      // Reload the entire page
+     
+      
+      // Move the reload inside the subscribe block
+      
+    });
+    Swal.fire({
+      icon: 'success',
+      title: 'Update Successful!',
+      text: 'Tenant updated successfully.',
     });
     window.location.reload();
+    // Remove the window.location.reload() statement from here
   }
 
-  deleteTenant(id: number) {
+  async deleteTenant(id: number) {
     // Show a confirmation dialog
-    const isConfirmed = window.confirm(
-      'Are you sure you want to delete this tenant?'
-    );
+    const isConfirmed = await Swal.fire({
+      icon: 'warning',
+      title: 'Are you sure?',
+      text: 'You won\'t be able to revert this!',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'No, cancel!',
+    });
 
-    if (isConfirmed) {
+    if (isConfirmed.isConfirmed) {
       // If the user confirms, proceed with deletion
       this.tenantData.deleteTenant(id).subscribe(() => {
         // Remove the deleted tenant from the tenants array.
         this.tenants = this.tenants.filter((tenant) => tenant.id !== id);
+        Swal.fire({
+          icon: 'success',
+          title: 'Delete Successful!',
+          text: 'Tenant deleted successfully.',
+        });
         window.location.reload();
       });
+      window.location.reload();
     }
-    window.location.reload();
   }
   logOut() {
     this.auth.signOut().then(() => {

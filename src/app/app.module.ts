@@ -12,7 +12,7 @@ import { ToastrModule } from 'ngx-toastr';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgxUiLoaderHttpModule, NgxUiLoaderModule } from 'ngx-ui-loader';
 import { LoginuserComponent } from './loginuser/loginuser.component';
-
+import { NgToastModule } from 'ng-angular-popup' // to be added
 @NgModule({
   declarations: [
     AppComponent,
@@ -24,7 +24,7 @@ import { LoginuserComponent } from './loginuser/loginuser.component';
   imports: [
     BrowserModule,
     AppRoutingModule,HttpClientModule,ReactiveFormsModule,
-    ToastrModule.forRoot(),BrowserAnimationsModule,NgxUiLoaderModule,NgxUiLoaderHttpModule.forRoot({showForeground:true})
+    ToastrModule.forRoot(),BrowserAnimationsModule,NgxUiLoaderModule,NgxUiLoaderHttpModule.forRoot({showForeground:true}),NgToastModule
   ],
   providers: [],
   bootstrap: [AppComponent]

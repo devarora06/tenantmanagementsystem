@@ -3,7 +3,7 @@ import { FormGroup, FormControl, Validators, AbstractControl } from '@angular/fo
 import { createClient } from '@supabase/supabase-js';
 import { Router } from '@angular/router';
 import { TenantService } from '../tenant.service';
-
+import Swal from 'sweetalert2';
 @Component({
   selector: 'app-signup',
   templateUrl: './sign-up.component.html',
@@ -72,7 +72,11 @@ export class SignupComponent {
           )
         ) {
           // Tenant name already exists, show an error message or take appropriate action
-          alert('Tenant name already exists');
+          Swal.fire({
+            icon: 'error',
+            title: 'Signup Error',
+            text: 'Tenant name already exists',
+          });
           return;
         }
 
@@ -123,7 +127,11 @@ export class SignupComponent {
         );
 
         // Successful signup
-        alert('Signup and Tenant creation successful');
+        Swal.fire({
+          icon: 'success',
+          title: 'Signup Successful!',
+          text: 'Your account has been created successfully.',
+        });
 
         // Redirect to the login page or another appropriate route
         this.router.navigate(['/log']);
