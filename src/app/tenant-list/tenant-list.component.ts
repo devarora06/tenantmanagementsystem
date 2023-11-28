@@ -102,7 +102,6 @@ export class TenantListComponent {
   }
 
   async createUser() {
-    debugger;
     const existingUser = await this.supabase
       .from('usertable')
       .select('*')
