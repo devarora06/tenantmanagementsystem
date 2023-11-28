@@ -14,17 +14,12 @@ export class SupabaseService {
     );
   }
 
-  // Store Supabase ID in local storage
   setSupabaseID(supabaseID: string): void {
     localStorage.setItem(this.supabaseIDKey, supabaseID);
   }
-
-  // Retrieve Supabase ID from local storage
   getSupabaseID(): string | null {
     return localStorage.getItem(this.supabaseIDKey);
   }
-
-  // Clear Supabase ID from local storage
   clearSupabaseID(): void {
     localStorage.removeItem(this.supabaseIDKey);
   }

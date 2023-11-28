@@ -8,17 +8,23 @@ import {HttpClientModule} from '@angular/common/http';
 import { ReactiveFormsModule } from '@angular/forms';
 import { SignupComponent } from './sign-up/sign-up.component';
 import { LoginComponent } from './login/login.component';
+import { ToastrModule } from 'ngx-toastr';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { NgxUiLoaderHttpModule, NgxUiLoaderModule } from 'ngx-ui-loader';
+import { LoginuserComponent } from './loginuser/loginuser.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     TenantListComponent,
     SignupComponent,
-    LoginComponent
+    LoginComponent,
+    LoginuserComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,HttpClientModule,ReactiveFormsModule,
+    ToastrModule.forRoot(),BrowserAnimationsModule,NgxUiLoaderModule,NgxUiLoaderHttpModule.forRoot({showForeground:true})
   ],
   providers: [],
   bootstrap: [AppComponent]

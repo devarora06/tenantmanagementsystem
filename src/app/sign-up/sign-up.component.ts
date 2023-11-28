@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { FormGroup, FormControl, Validators, AbstractControl } from '@angular/forms';
 import { createClient } from '@supabase/supabase-js';
 import { Router } from '@angular/router';
 import { TenantService } from '../tenant.service';
@@ -18,19 +18,43 @@ export class SignupComponent {
   signupForm = new FormGroup({
     id: new FormControl(0),
     firstName: new FormControl('', Validators.required),
-    lastName: new FormControl('', Validators.required),
+    lastName: new FormControl('', ),
     email: new FormControl('', [Validators.required, Validators.email]),
     department: new FormControl('', Validators.required),
     tenantName: new FormControl('', Validators.required),
     password: new FormControl('', [
       Validators.required,
       Validators.minLength(6),
+      Validators.pattern(/^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]+$/),
     ]),
-  });
+    confirmPassword: new FormControl('', [Validators.required]),
+  }, { validators: this.passwordMatchValidator });
 
   constructor(private router: Router, private tenantService: TenantService) {}
 
+  passwordMatchValidator(control: AbstractControl): { [key: string]: boolean } | null {
+    const password = control.get('password');
+    const confirmPassword = control.get('confirmPassword');
+  
+    if (!password || !confirmPassword) {
+      return null;
+    }
+  
+    return password.value === confirmPassword.value ? null : { 'passwordMismatch': true };
+  }
+
   async onSubmit() {
+    const existingUser = await this.supabase
+      .from('usertable')
+      .select('*')
+      .eq('email', this.signupForm.value.email)
+      .single();
+
+    if (existingUser.data) {
+      // User already exists
+      alert('User with this email already exists');
+      return;
+    }
     if (this.signupForm.valid) {
       const { firstName, lastName, email, department, tenantName, password } =
         this.signupForm.value;
@@ -73,11 +97,13 @@ export class SignupComponent {
           password,
           tenantName,
         };
-
-        const { id, ...dataWithoutId } = this.signupForm.value;
+        
+        const { id,confirmPassword, ...dataWithoutId } = this.signupForm.value;
         const { data: userData, error: userError } = await this.supabase
           .from('usertable')
           .upsert([dataWithoutId]);
+           
+        
 
         if (userError) {
           console.error('Supabase user creation error:', userError);
@@ -100,7 +126,7 @@ export class SignupComponent {
         alert('Signup and Tenant creation successful');
 
         // Redirect to the login page or another appropriate route
-        this.router.navigate(['/login']);
+        this.router.navigate(['/log']);
       } catch (error) {
         console.error('Supabase error:', error);
       }

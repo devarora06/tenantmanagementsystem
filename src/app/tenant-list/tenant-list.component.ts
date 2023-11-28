@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { TenantService } from '../tenant.service';
 import {
+  AbstractControl,
   FormBuilder,
   FormControl,
   FormGroup,
@@ -17,6 +18,11 @@ import { SupabaseService } from '../supabase.service';
   styleUrls: ['./tenant-list.component.css'],
 })
 export class TenantListComponent {
+  @HostListener('window:popstate', ['$event'])
+  onPopState(event: Event): void {
+    // Handle the popstate event (user clicked back or forward)
+    localStorage.clear();
+  }
   supabase = createClient(
     'https://lqviihvmwdkabqlpecxh.supabase.co',
     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxxdmlpaHZtd2RrYWJxbHBlY3hoIiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTkzMzgxNDAsImV4cCI6MjAxNDkxNDE0MH0.970stIqUsgdhPxejzbb-6R39pDOAx3J4rIGWz_c6ZAM'
@@ -41,8 +47,10 @@ export class TenantListComponent {
       password: new FormControl('', [
         Validators.required,
         Validators.minLength(6),
+        Validators.pattern(/^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]+$/),
       ]),
-    });
+      confirmPassword: new FormControl('', [Validators.required]),
+    }, { validators: this.passwordMatchValidator });
 
     // Initialize Edit User Form
     this.editUserForm = this.formBuilder.group({
@@ -53,6 +61,16 @@ export class TenantListComponent {
       // department: [''],
       department: ['', Validators.required],
     });
+  }
+  passwordMatchValidator(control: AbstractControl): { [key: string]: boolean } | null {
+    const password = control.get('password');
+    const confirmPassword = control.get('confirmPassword');
+  
+    if (!password || !confirmPassword) {
+      return null;
+    }
+  
+    return password.value === confirmPassword.value ? null : { 'passwordMismatch': true };
   }
 
   ngOnInit() {
@@ -85,6 +103,17 @@ export class TenantListComponent {
 
   async createUser() {
     debugger;
+    const existingUser = await this.supabase
+      .from('usertable')
+      .select('*')
+      .eq('email', this.createUserForm.value.email)
+      .single();
+
+    if (existingUser.data) {
+      // User already exists
+      alert('User with this email already exists');
+      return;
+    }
     if (this.createUserForm.valid) {
       const formData = this.createUserForm.value;
 
@@ -117,19 +146,6 @@ export class TenantListComponent {
           console.error('Supabase signup error:', signupResult.error);
           return;
         }
-
-        // After successful signup, create a new tenant
-
-        const { data: userData, error: userError } = await this.supabase
-          .from('usertable')
-          .upsert([tenantRequest]);
-
-        if (userError) {
-          console.error('Supabase user creation error:', userError);
-          return;
-        }
-
-        // Call the createTenants API with the extracted data
         this.tenantData.createTenants(tenantRequest).subscribe(
           (data) => {
             // Handle success response from createTenant API
@@ -140,6 +156,23 @@ export class TenantListComponent {
             console.error('createTenant API error:', error);
           }
         );
+        // After successful signup, create a new tenant
+        const incrementedId = Math.floor(1000 + Math.random() * 9000);
+        const incrementedTenantRequest = {
+          ...tenantRequest,
+          id: incrementedId,
+        };
+        const { data: userData, error: userError } = await this.supabase
+          .from('usertable')
+          .upsert([incrementedTenantRequest]);
+
+        if (userError) {
+          console.error('Supabase user creation error:', userError);
+          return;
+        }
+
+        // Call the createTenants API with the extracted data
+        
 
         // Successful signup
         alert('Tenant creation successful');
@@ -196,7 +229,8 @@ export class TenantListComponent {
   }
   logOut() {
     this.auth.signOut().then(() => {
-      this.router.navigate(['/login']);
+      localStorage.removeItem('token')
+      this.router.navigate(['/log']);
     });
   }
 }

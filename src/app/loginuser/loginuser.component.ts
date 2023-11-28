@@ -4,11 +4,12 @@ import { createClient } from '@supabase/supabase-js';
 import { Router } from '@angular/router';
 
 @Component({
-  selector: 'app-login',
-  templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css'],
+  selector: 'app-loginuser',
+  templateUrl: './loginuser.component.html',
+  styleUrls: ['./loginuser.component.css']
 })
-export class LoginComponent {
+export class LoginuserComponent {
+  
   loggedInUserName: string | null = null;
   supabase = createClient(
     'https://lqviihvmwdkabqlpecxh.supabase.co',
@@ -37,7 +38,7 @@ export class LoginComponent {
         } else if (data) {
           const { data: userData, error: fetchError } = await this.supabase
             .from('usertable')
-            .select('id, tenantName') // Add 'firstName' to the select query
+            .select('id, tenantName') // Add 'tenantName' to the select query
             .eq('email', email)
             .single();
 
